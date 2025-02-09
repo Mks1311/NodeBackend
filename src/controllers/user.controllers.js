@@ -8,8 +8,6 @@ export const registerUser=asyncHandler(async(req,res)=>{
 
     // take user data
     const {username,email,fullName,password}=req.body;
-    console.log('object',email)
-
 
      //data vaildation
     if(
@@ -19,7 +17,7 @@ export const registerUser=asyncHandler(async(req,res)=>{
     }
 
     //check if it already exists: username,email
-    const existedUser=User.findOne({
+    const existedUser=await User.findOne({
         $or:[{ username },{ email }]
     })
 
@@ -29,7 +27,7 @@ export const registerUser=asyncHandler(async(req,res)=>{
 
     //check for images, avatar
     const avatarLocalPath=req.files?.avatar[0]?.path;
-    const coverImageLocalPath=req.files?.coverImage[0] && req.files?.coverImage[0]?.path;
+    const coverImageLocalPath=req.files?.coverImage && req.files?.coverImage[0]?.path;
 
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar file is required")
@@ -46,7 +44,7 @@ export const registerUser=asyncHandler(async(req,res)=>{
     }
 
     //create user object - create entry in db
-    const user=User.create({
+    const user=await User.create({
         fullName,
         avatar:avatarCloudUrl.url,
         coverImage:coverImageCloudUrl?.url || "",
